@@ -15,21 +15,16 @@ import {
   formattedDate,
   renderSpecialist,
   tConvert,
+  textLimit,
 } from "../../utils/helper";
 import HeadingTitle from "../common/headingTitle";
 import SortWithFilter from "../common/sortWithFilter";
 import { useRouter } from "expo-router";
+import { FlatList } from "react-native";
 
 const textColor = "black";
 
-const HomeCard = ({
-  data,
-  title,
-  showSectionsTitle,
-  showSort,
-  showSortWithFilter,
-  handleSeeAll,
-}) => {
+const HomeApptCard = ({ data, showSectionsTitle, handleSeeAll }) => {
   const { defaultColor } = useApplicationContext();
   const navigation = useNavigation();
   const router = useRouter();
@@ -65,30 +60,26 @@ const HomeCard = ({
   };
 
   return (
-    <View
-      style={{
-        marginBottom: 20,
-      }}
-    >
+    <View>
       {showSectionsTitle ? (
         <HeadingTitle
-          title={title}
+          title="Recent Appointments"
           onClickHandler={() => {}}
-          showSort={showSort}
+          showSort={false}
           handleSeeAll={handleSeeAll}
         />
       ) : null}
-      {showSortWithFilter ? <SortWithFilter onClickHandler={() => {}} /> : null}
-      {data.map((item, index) => {
-        return (
+      <FlatList
+        horizontal={true}
+        data={data}
+        renderItem={({ item }) => (
           <View
-            key={index}
             style={{
               borderWidth: 1,
               padding: 10,
               borderColor: "#D9D9D9",
               borderRadius: 10,
-              marginTop: 5,
+              marginRight: 10,
             }}
           >
             <TouchableOpacity
@@ -182,34 +173,18 @@ const HomeCard = ({
                       fontSize: 13,
                       flexDirection: "row",
                       marginTop: 3,
+                      color: "gray",
                     }}
                   >
-                    <Text
-                      style={{
-                        fontSize: 13,
-                        color: textColor,
-                        marginRight: 10,
-                      }}
-                    >
-                      {item.doctorData.clinicName}
-                      {"   "}
+                    <Text style={{ marginRight: 10 }}>
+                      {textLimit(
+                        item.doctorData.clinicName +
+                          ", " +
+                          item.doctorData.address.city,
+                        30
+                      )}
                     </Text>
-                    <Octicons
-                      name="dot-fill"
-                      size={12}
-                      color="black"
-                      style={{}}
-                    />
-                    <Text
-                      style={{
-                        fontSize: 13,
-                        color: defaultColor.text,
-                        marginLeft: "10px",
-                      }}
-                    >
-                      {" "}
-                      {item.doctorData.address.city}
-                    </Text>
+                    <Text style={{ marginLeft: "10px" }}></Text>
                   </Text>
                 </View>
               </View>
@@ -240,7 +215,6 @@ const HomeCard = ({
               <View
                 style={{
                   flexDirection: "row",
-                  // gap: 10,
                   marginTop: 10,
                   alignItems: "center",
                 }}
@@ -274,7 +248,7 @@ const HomeCard = ({
                 borderRadius: 5,
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundColor: "#eef0ff",
+                backgroundColor: defaultColor.defaultColor,
                 paddingHorizontal: 30,
                 flex: 1,
               }}
@@ -289,17 +263,19 @@ const HomeCard = ({
                   fontSize: 14,
                   fontWeight: 600,
                   textAlign: "center",
-                  color: defaultColor.defaultColor,
+                  color: "#fff",
                 }}
               >
                 {item.apptStatus === "pending" ? "Direction" : "Rebook"}
               </Text>
             </TouchableOpacity>
           </View>
-        );
-      })}
+        )}
+        showsHorizontalScrollIndicator={false}
+        style={{ marginTop: 5 }}
+      />
     </View>
   );
 };
 
-export default HomeCard;
+export default HomeApptCard;

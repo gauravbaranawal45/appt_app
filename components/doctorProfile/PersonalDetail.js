@@ -68,7 +68,7 @@ const PersonalDetail = ({ details, params }) => {
                 fontWeight: 600,
               }}
             >
-              {details?.firstName + " " + details?.lastName}
+              {details?.fullName}
             </Text>
           </View>
           <Text

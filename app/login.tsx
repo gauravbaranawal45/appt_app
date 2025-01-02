@@ -19,6 +19,7 @@ import { useForm, Controller } from "react-hook-form";
 import Checkbox from "expo-checkbox";
 import authFactory from "../actions/authAction";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 const Signup = () => {
   const {
@@ -32,21 +33,21 @@ const Signup = () => {
     },
   });
   const { defaultColor } = useApplicationContext();
+  const navigation = useNavigation();
   const router = useRouter();
   const [apiError, setApiError] = useState({
     error: false,
     message: "",
   });
 
-  const [isChecked, setChecked] = useState(false);
-
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     try {
       const res = await authFactory.signin(data);
+      // console.log("okkkk", res.data);
       await AsyncStorage.setItem("__token", res.data.token);
-      router.push("home");
-    } catch (e) {
-      setApiError({ error: true, ...e.response?.data });
+      router.push("/home");
+    } catch (e: any) {
+      setApiError({ error: true, ...e?.response?.data });
     }
   };
 

@@ -8,28 +8,30 @@ import {
   StyleSheet,
   TextInput,
   FlatList,
-  Image,
 } from "react-native";
-import React, { useState } from "react";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import HomeSpecialist from "@/components/home/homeSpecialist";
+import React, { useCallback, useState } from "react";
+import { AntDesign } from "@expo/vector-icons";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import useDebouncedCallback from "@/hooks/useDebouncedCallback";
 import homeFactory from "../../actions/homeAction";
-import blankProfile from "@/assets//images/blank-profile-picture.png";
-import { imgPath } from "@/service/axiosInstance";
 import { useApplicationContext } from "@/context/ApplicationContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Recentsearch from "@/components/globalsearch/recentsearch";
+import Searchcard from "@/components/globalsearch/searchcard";
 import { useRouter } from "expo-router";
 
 const layoutMarginHorizontal = 10;
 
 const GlobalSearch = () => {
+  const inputRef = React.useRef();
+  setTimeout(() => inputRef.current.focus(), 100);
   const { defaultColor } = useApplicationContext();
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
   const router = useRouter();
   const [searchedData, setSearchedData] = useState([]);
+  const [recentData, setRecentData] = useState([]);
 
   const debounced = useDebouncedCallback(async (searchQuery) => {
     if (searchQuery) {
@@ -39,6 +41,8 @@ const GlobalSearch = () => {
       } else {
         console.error(result);
       }
+    } else {
+      setSearchedData([]);
     }
   }, 1000);
 
@@ -46,7 +50,26 @@ const GlobalSearch = () => {
     debounced(val);
   };
 
-  const handleClick = (item) => {
+  useFocusEffect(
+    useCallback(() => {
+      // console.log("Screen is focused!");
+      getStoredSchedule();
+      return () => {
+        // console.log("Screen is blurred!");
+      };
+    }, [])
+  );
+
+  const getStoredSchedule = async () => {
+    const storedData = await AsyncStorage.getItem("__recentSearch");
+    setRecentData(storedData ? JSON.parse(storedData) : []);
+  };
+
+  const handleClick = async (item) => {
+    let newState = [...recentData];
+    newState = newState.filter((newitem) => item._id !== newitem._id);
+    newState.unshift(item);
+    await AsyncStorage.setItem("__recentSearch", JSON.stringify(newState));
     if (item.name) {
       navigation.navigate("doctorList", {
         specialist: item._id,
@@ -58,9 +81,10 @@ const GlobalSearch = () => {
     }
   };
 
-  const inputRef = React.useRef();
-
-  setTimeout(() => inputRef.current.focus(), 100);
+  const clearRecentSearch = async () => {
+    await AsyncStorage.removeItem("__recentSearch");
+    setRecentData([]);
+  };
 
   return (
     <SafeAreaView
@@ -118,192 +142,59 @@ const GlobalSearch = () => {
             marginHorizontal: layoutMarginHorizontal,
           }}
         >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginTop: 10,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: 600,
-                color: defaultColor.text,
-              }}
-            >
-              Recent
-            </Text>
-            <TouchableOpacity>
-              <Text style={{ fontSize: 16, color: defaultColor.text }}>
-                Clear
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={{ marginTop: 20 }}>
-            <FlatList
-              horizontal={true}
-              data={[
-                {
-                  banner: require("@/assets//images/img1.jpg"),
-                  name: "Peripheral Nerve",
-                },
-                {
-                  banner: require("@/assets//images/img2.jpg"),
-                  name: "Dental",
-                },
-                {
-                  banner: require("@/assets//images/banner.jpg"),
-                  name: "Anesthesiologists & fsdfsdfsd",
-                },
-                {
-                  banner: require("@/assets//images/banner.jpg"),
-                  name: "Peripheral Nerve",
-                },
-                {
-                  banner: require("@/assets//images/banner.jpg"),
-                  name: "Peripheral Nerve",
-                },
-                {
-                  banner: require("@/assets//images/banner.jpg"),
-                  name: "Peripheral Nerve",
-                },
-                {
-                  banner: require("@/assets//images/banner.jpg"),
-                  name: "Peripheral Nerve",
-                },
-                {
-                  banner: require("@/assets//images/banner.jpg"),
-                  name: "Peripheral Nerve",
-                },
-                {
-                  banner: require("@/assets//images/banner.jpg"),
-                  name: "Peripheral Nerve",
-                },
-                {
-                  banner: require("@/assets//images/banner.jpg"),
-                  name: "Peripheral Nerve",
-                },
-                {
-                  banner: require("@/assets//images/banner.jpg"),
-                  name: "Peripheral Nerve",
-                },
-                {
-                  banner: require("@/assets//images/banner.jpg"),
-                  name: "Peripheral Nerve",
-                },
-                {
-                  banner: require("@/assets//images/banner.jpg"),
-                  name: "Peripheral Nerve",
-                },
-              ]}
-              renderItem={({ item }) => (
-                <HomeSpecialist
-                  item={item}
-                  width={30}
-                  height={30}
-                  wrapperView={80}
-                />
-              )}
-              showsHorizontalScrollIndicator={false}
-            />
-          </View>
-          <View
-            style={{
-              height: 0.5,
-              backgroundColor: "#d7d5d5",
-              marginVertical: 10,
-            }}
-          />
-          {searchedData.map((item, i) => {
-            return (
-              <TouchableOpacity
-                key={i}
+          {recentData.length > 0 && (
+            <>
+              <View
                 style={{
-                  flex: 1,
                   flexDirection: "row",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  margin: 10,
-                  gap: 10,
+                  marginTop: 10,
                 }}
-                onPress={() => handleClick(item)}
               >
-                <View
+                <Text
                   style={{
-                    flex: 1,
-                    flexDirection: "row",
-                    gap: 20,
-                    alignItems: "center",
+                    fontSize: 16,
+                    fontWeight: 600,
+                    color: defaultColor.text,
                   }}
                 >
-                  {item.name ? (
-                    <Image
-                      style={{
-                        width: 50,
-                        height: 50,
-                        borderRadius: 100,
-                      }}
-                      source={
-                        item.image
-                          ? { uri: `${imgPath}specializations/${item.image}` }
-                          : blankProfile
-                      }
-                    />
-                  ) : (
-                    <Image
-                      style={{
-                        width: 50,
-                        height: 50,
-                        borderRadius: 100,
-                      }}
-                      source={
-                        item.image
-                          ? { uri: `${imgPath}profileimages/${item.image}` }
-                          : blankProfile
-                      }
+                  Recent
+                </Text>
+                <TouchableOpacity onPress={clearRecentSearch}>
+                  <Text style={{ fontSize: 16, color: defaultColor.text }}>
+                    Clear
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{ marginTop: 20 }}>
+                <FlatList
+                  horizontal={true}
+                  data={recentData}
+                  renderItem={({ item }) => (
+                    <Recentsearch
+                      item={item}
+                      width={30}
+                      height={30}
+                      wrapperView={80}
+                      handleClick={handleClick}
                     />
                   )}
-                  <View style={{ flex: 1 }}>
-                    <Text
-                      style={{
-                        fontSize: 14,
-                        color: defaultColor.text,
-                        fontWeight: 600,
-                      }}
-                    >
-                      {item.name
-                        ? item.name
-                        : item.firstName + " " + item.lastName}
-                    </Text>
-                    {!item.name && (
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          color: defaultColor.text,
-                          fontWeight: 500,
-                        }}
-                      >
-                        Genral dsa
-                      </Text>
-                    )}
-                  </View>
-                </View>
+                  showsHorizontalScrollIndicator={false}
+                />
+              </View>
+              <View
+                style={{
+                  height: 0.5,
+                  backgroundColor: "#d7d5d5",
+                  marginVertical: 10,
+                }}
+              />
+            </>
+          )}
 
-                <View style={{}}>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 600,
-                      color: defaultColor.text,
-                    }}
-                  >
-                    {item.name ? "Speciality" : "Doctor"}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            );
+          {searchedData.map((item, i) => {
+            return <Searchcard item={item} handleClick={handleClick} key={i} />;
           })}
         </View>
       </ScrollView>

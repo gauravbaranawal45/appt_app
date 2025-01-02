@@ -103,7 +103,7 @@ const HomeCard = ({
                       fontWeight: 600,
                     }}
                   >
-                    {item.firstName + " " + item.lastName}
+                    {item.fullName}
                   </Text>
                   <View
                     style={{

@@ -12,18 +12,44 @@ const AapptDoctorCard = ({ data, defaultColor, router }) => {
     return text;
   };
 
+  const renderConditionalValue = (item) => {
+    let itemval = {};
+    if (item.apptStatus === "pending") {
+      itemval = {
+        text: "Pending",
+        color: defaultColor.defaultColor,
+        backgroundColor: "#eef0ff",
+      };
+    } else if (item.apptStatus === "completed") {
+      itemval = {
+        text: "Completed",
+        color: defaultColor.background,
+        backgroundColor: "#28a745",
+      };
+    } else if (item.apptStatus === "cancelled") {
+      itemval = {
+        text: "Cancelled",
+        color: "#890000",
+        backgroundColor: "#fcf2f1",
+      };
+    } else if (item.apptStatus === "rescheduled") {
+      itemval = {
+        text: "Rescheduled",
+        color: defaultColor.background,
+        backgroundColor: "#dc2b2b",
+      };
+    }
+    return itemval;
+  };
+
   return (
     <TouchableOpacity
-      activeOpacity={0.8}
       onPress={() =>
         router.push({
           pathname: `doctorDetails/${data.doctorId}`,
         })
       }
       style={{
-        flexDirection: "row",
-        gap: 10,
-        alignItems: "center",
         borderWidth: 1,
         padding: 10,
         borderRadius: 5,
@@ -31,63 +57,103 @@ const AapptDoctorCard = ({ data, defaultColor, router }) => {
         borderColor: defaultColor.cardBorderColor,
       }}
     >
-      <View>
-        <Image
+      <View
+        style={{
+          flexDirection: "row",
+          gap: 10,
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 10,
+        }}
+      >
+        <View style={{}}>
+          <Text
+            style={{
+              color: "gray",
+              fontSize: 12,
+              fontWeight: 600,
+            }}
+          >
+            Appointment ID : #{data.apptID ?? data.old_apptID}
+          </Text>
+        </View>
+
+        <View
           style={{
-            width: 75,
-            height: 75,
-            borderRadius: 100,
+            backgroundColor: renderConditionalValue(data).backgroundColor,
+            padding: 5,
+            borderRadius: 3,
           }}
-          source={
-            data?.doctorData.image
-              ? {
-                  uri: `${imgPath}profileimages/${data?.doctorData.image}`,
-                }
-              : blankProfile
-          }
-        />
+        >
+          <Text
+            style={{
+              color: renderConditionalValue(data).color,
+              fontSize: 12,
+            }}
+          >
+            {renderConditionalValue(data).text}
+          </Text>
+        </View>
       </View>
-      <View style={{ flex: 1 }}>
-        <Text
-          style={{
-            color: defaultColor.heading,
-            fontSize: 16,
-            fontWeight: 600,
-          }}
-        >
-          {data?.doctorData.firstName + " " + data?.doctorData.lastName}
-        </Text>
-        <Text
-          style={{
-            fontSize: 14,
-            color: defaultColor.placeHolder,
-            marginTop: 3,
-          }}
-        >
-          {renderEducation(data)}
-        </Text>
-        <Text
-          style={{
-            fontSize: 14,
-            color: defaultColor.placeHolder,
-            marginTop: 3,
-            textTransform: "capitalize",
-          }}
-        >
-          {data?.doctorData?.gender}
-          {" | "}
-          {data?.doctorData.workExperience} YRS Exp.
-        </Text>
-        <Text
-          style={{
-            fontSize: 14,
-            color: defaultColor.lightGreen,
-            fontWeight: 500,
-            marginTop: 3,
-          }}
-        >
-          Consultation Fee: ₹{data?.apptFees}
-        </Text>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+        <View>
+          <Image
+            style={{
+              width: 75,
+              height: 75,
+              borderRadius: 100,
+            }}
+            source={
+              data?.doctorData.image
+                ? {
+                    uri: `${imgPath}profileimages/${data?.doctorData.image}`,
+                  }
+                : blankProfile
+            }
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text
+            style={{
+              color: defaultColor.heading,
+              fontSize: 16,
+              fontWeight: 600,
+            }}
+          >
+            {data?.doctorData.fullName}
+          </Text>
+          <Text
+            style={{
+              fontSize: 14,
+              color: defaultColor.placeHolder,
+              marginTop: 3,
+            }}
+          >
+            {renderEducation(data)}
+          </Text>
+          <Text
+            style={{
+              fontSize: 14,
+              color: defaultColor.placeHolder,
+              marginTop: 3,
+              textTransform: "capitalize",
+            }}
+          >
+            {data?.doctorData?.gender}
+            {" | "}
+            {data?.doctorData.workExperience} YRS Exp.
+          </Text>
+          <Text
+            style={{
+              fontSize: 14,
+              color: defaultColor.lightGreen,
+              fontWeight: 500,
+              marginTop: 3,
+            }}
+          >
+            Consultation Fee: ₹{data?.apptFees}
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );

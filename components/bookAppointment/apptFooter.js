@@ -9,6 +9,7 @@ const ApptFooter = ({
   memberData,
   setMemberData,
   handleAppt,
+  isSubmit,
 }) => {
   const defaultMember = () => {
     return memberData.filter((item) => item.active)[0] ?? {};
@@ -110,6 +111,7 @@ const ApptFooter = ({
                 marginLeft: 30,
               }}
               onPress={handleAppt}
+              disabled={isSubmit}
             >
               <Text
                 style={{

@@ -3,6 +3,7 @@ import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { Octicons } from "@expo/vector-icons";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { useApplicationContext } from "@/context/ApplicationContext";
+import { Pressable } from "react-native";
 
 const seeAllColor = "#4C4DDC";
 
@@ -18,7 +19,7 @@ const App = ({
 
   return (
     <View>
-      <TouchableOpacity
+      <Pressable
         onPress={() => refStandard.current.open()}
         style={{
           flexDirection: "row",
@@ -41,7 +42,7 @@ const App = ({
           {title}
         </Text>
         <Octicons name="sort-desc" size={20} color={seeAllColor} />
-      </TouchableOpacity>
+      </Pressable>
       {/* List Menu */}
       <RBSheet ref={refStandard} draggable dragOnContent height={height}>
         <View

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Modal,
@@ -13,18 +13,27 @@ import {
   TextInput,
   ScrollView,
 } from "react-native";
-import { Ionicons, AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import Buttons from "@/components/common/Button";
 import { suggestedCitiesName } from "@/constants/staticData";
 import { useApplicationContext } from "@/context/ApplicationContext";
 import { useRouter } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
 import NotiCard from "@/components/modal/Notification/NotiCard";
+import notificationFactory from "@/actions/notificationAction";
 const layoutMarginHorizontal = 10;
 
-const NotificationModal = ({ open, close, getCurrentLocation }) => {
-  const router = useRouter();
-  const navigation = useNavigation();
+const NotificationModal = ({ open, close }) => {
+  const [list, setList] = useState({ data: [] });
+
+  const fetchlist = async () => {
+    const res = await notificationFactory.notificationList();
+    setList(res.data);
+  };
+
+  useEffect(() => {
+    fetchlist();
+  }, []);
 
   return (
     <View style={styles.centeredView}>
@@ -67,14 +76,11 @@ const NotificationModal = ({ open, close, getCurrentLocation }) => {
                 marginHorizontal: layoutMarginHorizontal,
               }}
             >
-              <NotiCard
-                showSortWithFilter={true}
-                title="Fevourite Doctor"
-                link="fevouriteDoctor"
-                layoutMarginVerticle={20}
-                layoutMarginHorizontal={10}
-                data={10}
-              />
+              <View style={{ marginBottom: 20 }}>
+                {list.data.map((item, i) => {
+                  return <NotiCard key={i} item={item} close={close} />;
+                })}
+              </View>
             </View>
           </ScrollView>
         </SafeAreaView>

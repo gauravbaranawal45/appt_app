@@ -34,7 +34,7 @@ const HeadingTitle = ({
           <Text style={styles.seeAll}>View all</Text>
           <MaterialIcons
             name="arrow-forward-ios"
-            size={18}
+            size={16}
             color={seeAllColor}
           />
         </TouchableOpacity>
@@ -54,12 +54,12 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   seeAll: {
-    fontSize: 16,
-    marginHorizontal: 10,
+    fontSize: 14,
+    marginHorizontal: 5,
     color: seeAllColor,
   },
   titleStyle: {
-    fontSize: 20,
+    fontSize: 18,
     color: seeAllColor,
     fontWeight: "600",
   },

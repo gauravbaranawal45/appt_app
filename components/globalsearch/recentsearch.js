@@ -5,9 +5,11 @@ import blankProfile from "@/assets//images/blank-profile-picture.png";
 import { useNavigation } from "@react-navigation/native";
 import { imgPath } from "@/service/axiosInstance";
 
-const HomeSpecialist = ({ index, item, width, height, wrapperView }) => {
+const Recentsearch = ({ item, width, height, wrapperView, handleClick }) => {
+  console.log("item", item);
   const navigation = useNavigation();
   const colorScheme = "light";
+  const path = item.name ? `specializations` : `profileimages`;
 
   return (
     <View
@@ -20,14 +22,7 @@ const HomeSpecialist = ({ index, item, width, height, wrapperView }) => {
       }}
     >
       <View>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() =>
-            navigation.navigate("doctorList", {
-              specialist: item._id,
-            })
-          }
-        >
+        <TouchableOpacity activeOpacity={0.8} onPress={() => handleClick(item)}>
           <View
             style={{
               backgroundColor: "#eef0ff",
@@ -40,7 +35,7 @@ const HomeSpecialist = ({ index, item, width, height, wrapperView }) => {
             <Image
               source={
                 item.image
-                  ? { uri: `${imgPath}specializations/${item.image}` }
+                  ? { uri: `${imgPath + path}/${item.image}` }
                   : blankProfile
               }
               style={{
@@ -57,7 +52,7 @@ const HomeSpecialist = ({ index, item, width, height, wrapperView }) => {
               color: Colors[colorScheme].text,
             }}
           >
-            {item.name}
+            {item.name ? item.name : item.fullName}
           </Text>
         </TouchableOpacity>
       </View>
@@ -65,4 +60,4 @@ const HomeSpecialist = ({ index, item, width, height, wrapperView }) => {
   );
 };
 
-export default HomeSpecialist;
+export default Recentsearch;

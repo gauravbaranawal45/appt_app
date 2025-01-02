@@ -12,11 +12,11 @@ import { useApplicationContext } from "@/context/ApplicationContext";
 import homeFactory from "../actions/homeAction";
 import { imgPath } from "../service/axiosInstance";
 import blankProfile from "@/assets/images/blank-profile-picture.png";
-import { useRoute } from "@react-navigation/native";
-import ApptSlot from "./doctorDetails/ApptSlot";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import ApptSlot from "../components/rescheduleAppt/ApptSlot";
 import { useRouter } from "expo-router";
 
-const AppointmentSlot = () => {
+const RescheduleAppt = () => {
   const { params } = useRoute();
   console.log("params", params);
   const router = useRouter();
@@ -31,6 +31,9 @@ const AppointmentSlot = () => {
       console.log("error", e);
     }
   };
+
+  // var str = JSON.stringify(apptdata, null, 2);
+  // console.log(str);
 
   useEffect(() => {
     fetchDetails();
@@ -156,4 +159,4 @@ const AppointmentSlot = () => {
   );
 };
 
-export default AppointmentSlot;
+export default RescheduleAppt;

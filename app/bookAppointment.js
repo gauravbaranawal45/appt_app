@@ -21,17 +21,18 @@ import ApptFooter from "../components/bookAppointment/apptFooter";
 import DoctorCard from "../components/bookAppointment/doctorCard";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
 const BookAppointment = () => {
   const isFocused = useIsFocused();
   const toast = useToast();
   const { params } = useRoute();
-  const route = useRoute();
-  const navigation = useNavigation();
+  const router = useRouter();
   const { defaultColor } = useApplicationContext();
   const [data, setData] = useState(null);
   const [memberData, setMemberData] = useState([]);
   const [couponCode, setCouponCode] = useState("");
+  const [isSubmit, setIsSubmit] = useState(false);
   const [apiError, setApiError] = useState({
     error: false,
     message: "",
@@ -67,6 +68,7 @@ const BookAppointment = () => {
   }, [isFocused]);
 
   const handleAppt = async () => {
+    setIsSubmit(true);
     let newState = [...memberData];
     newState = newState.filter((item) => item.active)[0];
     const selectedDate = await AsyncStorage.getItem("__consultBookDetails");
@@ -84,7 +86,7 @@ const BookAppointment = () => {
       paymentSource: "cash",
       apptType: data.apptType,
     };
-
+    // console.log(" payload   ", payload);
     // return;
     try {
       const res = await appointmentFactory.createAppointment(payload);
@@ -95,7 +97,7 @@ const BookAppointment = () => {
         animationType: "zoom-in",
       });
       setTimeout(() => {
-        // navigation.navigate("appointments");
+        router.push("/appointments");
       }, 1000);
     } catch (e) {
       console.log("eeee", e);
@@ -106,6 +108,7 @@ const BookAppointment = () => {
         animationType: "zoom-in",
       });
     } finally {
+      setIsSubmit(false);
     }
   };
 
@@ -129,7 +132,7 @@ const BookAppointment = () => {
               params={params}
             />
           )}
-          <View style={{ marginTop: 30, marginBottom: 10 }}>
+          {/* <View style={{ marginTop: 30, marginBottom: 10 }}>
             <Text
               style={{
                 color: defaultColor.heading,
@@ -139,8 +142,8 @@ const BookAppointment = () => {
             >
               Offers and discounts
             </Text>
-          </View>
-          <View
+          </View> */}
+          {/* <View
             style={{
               backgroundColor: "#fff",
               borderWidth: 1,
@@ -184,7 +187,7 @@ const BookAppointment = () => {
                 />
               </View>
             </TouchableOpacity>
-          </View>
+          </View> */}
           <View style={{ marginTop: 30, marginBottom: 10 }}>
             <Text
               style={{
@@ -236,9 +239,9 @@ const BookAppointment = () => {
                   </Text>
                 </View>
                 <View style={{ flexDirection: "row", gap: 10 }}>
-                  <Text style={{ textDecorationLine: "line-through" }}>
+                  {/* <Text style={{ textDecorationLine: "line-through" }}>
                     ₹108
-                  </Text>
+                  </Text> */}
                   <Text>Free</Text>
                 </View>
               </View>
@@ -290,6 +293,7 @@ const BookAppointment = () => {
         memberData={memberData}
         setMemberData={setMemberData}
         handleAppt={handleAppt}
+        isSubmit={isSubmit}
       />
     </SafeAreaView>
   );

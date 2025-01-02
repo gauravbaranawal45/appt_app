@@ -12,6 +12,8 @@ import React, { useEffect, useState } from "react";
 import Carousel from "react-native-reanimated-carousel";
 import HomeCard from "@/components/home/card";
 import AppointmentCard from "@/components/home/appointmentCard";
+import HomeApptCard from "@/components/home/homeApptCard";
+
 import FilterSpecialist from "@/components/home/filterSpecialist";
 import Header from "@/components/header1";
 import homeFactory from "../../actions/homeAction";
@@ -19,6 +21,7 @@ import { useApplicationContext } from "@/context/ApplicationContext";
 import appointmentFactory from "@/actions/appointmentAction";
 import { useNavigation } from "@react-navigation/native";
 import { imgPath } from "../../service/axiosInstance";
+import { RefreshControl } from "react-native";
 const layoutMarginVerticle = 20;
 const layoutMarginHorizontal = 10;
 
@@ -28,20 +31,30 @@ const Home = () => {
   const { homedata, setHomedata } = useApplicationContext();
   const [apptData, setApptData] = useState([]);
   const [docList, setDocList] = useState([]);
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchHome();
+    setRefreshing(false);
+  }, []);
 
   const fetchHome = async () => {
     try {
-      const res = await homeFactory.home({ limit: 2 });
+      const res = await homeFactory.home({ limit: 4 });
       setHomedata(res.data.data);
       const getDoctors = await homeFactory.getDoctors({
-        limit: 2,
+        limit: 4,
         specialization: "doctorList",
       });
       setDocList(getDoctors.data.data);
       const appt = await appointmentFactory.getAppointments({
-        limit: 2,
+        limit: 4,
         apptType: "pending",
       });
+      // var str = JSON.stringify(appt.data.data[0].doctorData, null, 2);
+      // console.log("aaaaaaaaaaaa", str);
+
       setApptData(appt.data.data);
     } catch (e) {
       console.log("error", e);
@@ -69,7 +82,7 @@ const Home = () => {
   const homeTopBanner = () => {
     return homedata.banners?.filter(
       (item) => item.sectionName === "top-section"
-    );
+    )[0];
   };
 
   return (
@@ -81,9 +94,15 @@ const Home = () => {
     >
       <StatusBar barStyle={"light-content"} />
       <Header />
-      <ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>
+      <ScrollView
+        style={{ flex: 1, backgroundColor: "#fff" }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View>
-          <Carousel
+          {/* <Carousel
             loop
             width={width}
             height={width / 2}
@@ -115,6 +134,14 @@ const Home = () => {
                 </TouchableOpacity>
               );
             }}
+          /> */}
+          <Image
+            style={{
+              height: 150,
+            }}
+            source={{
+              uri: `${imgPath}banners/${homeTopBanner()?.bannerImg}`,
+            }}
           />
         </View>
 
@@ -125,13 +152,20 @@ const Home = () => {
         >
           <FilterSpecialist handleSeeAll={handleSeeAllForSpec} />
           {apptData.length > 0 && (
+            <HomeApptCard
+              data={apptData}
+              showSectionsTitle={true}
+              handleSeeAll={handleSeeAllForAppt}
+            />
+          )}
+          {/* {apptData.length > 0 && (
             <AppointmentCard
               data={apptData}
               title="Appointments"
               showSectionsTitle={true}
               handleSeeAll={handleSeeAllForAppt}
             />
-          )}
+          )} */}
 
           {/* 
           <HomeCard

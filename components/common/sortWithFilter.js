@@ -7,7 +7,7 @@ import { useRouter } from "expo-router";
 const seeAllColor = "#4C4DDC";
 
 const SortWithFilter = ({ onClickHandler, options }) => {
-  console.log("showLocationAlert", options);
+  // console.log("showLocationAlert", options);
 
   const [open, setOpen] = useState(false);
   const router = useRouter();

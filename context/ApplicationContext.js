@@ -12,7 +12,7 @@ const Provider = ({ children }) => {
   const [location, setLocation] = useState();
   const [address, setAddress] = useState({ postalCode: "Fetching..." });
   const [homedata, setHomedata] = useState({});
-  const [apptdata, setApptdata] = useState([]);
+  const [apptdata, setApptdata] = useState({ data: [] });
   const [profile, setProfile] = useState({});
 
   const getPermissions = async () => {

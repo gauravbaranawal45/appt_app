@@ -135,6 +135,8 @@ const ApptCancelSheet = ({
     } catch (e) {}
   };
 
+  const handlerCall = () => {};
+
   return (
     <View>
       <TouchableOpacity
@@ -147,12 +149,12 @@ const ApptCancelSheet = ({
       >
         <AntDesign
           name="closecircleo"
-          size={26}
+          size={22}
           style={{ color: defaultColor.heading, width: 40 }}
         />
         <Text
           style={{
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: "500",
             color: "#11181C",
             textTransform: "capitalize",
@@ -299,7 +301,9 @@ const ApptCancelSheet = ({
                       : defaultColor.defaultColor,
                   paddingHorizontal: 30,
                 }}
-                onPress={handleConfirm}
+                onPress={
+                  paymentStatus === "received" ? handlerCall : handleConfirm
+                }
               >
                 <Text
                   style={{

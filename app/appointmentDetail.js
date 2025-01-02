@@ -4,8 +4,8 @@ import {
   StatusBar,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   Text,
+  RefreshControl,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import { useRoute } from "@react-navigation/native";
@@ -17,6 +17,7 @@ import ApptDoctorCard from "../components/apptDetails/apptDoctorCard";
 import Apptdetail from "../components/apptDetails/apptdetail";
 import Petientdetail from "../components/apptDetails/petientdetail";
 import ApptCancelSheet from "../components/apptDetails/ApptCancelSheet";
+import RescheduleSheet from "../components/apptDetails/RescheduleSheet";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 
 const AppointmentDetail = () => {
@@ -24,7 +25,14 @@ const AppointmentDetail = () => {
   const { params } = useRoute();
   const router = useRouter();
   const { defaultColor } = useApplicationContext();
-  const [data, setData] = useState(null);
+  const [data, setData] = useState();
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchDetails();
+    setRefreshing(false);
+  }, []);
 
   const onPressTouch = () => {
     scrollRef.current?.scrollTo({
@@ -47,7 +55,7 @@ const AppointmentDetail = () => {
   }, []);
 
   // var str = JSON.stringify(data, null, 2);
-  // console.log(data);
+  // console.log(str);
 
   return (
     <SafeAreaView
@@ -59,13 +67,15 @@ const AppointmentDetail = () => {
       <StatusBar barStyle="light-content" />
       <ScrollView
         ref={scrollRef}
-        nestedScrollEnabled={true}
         style={{
           flex: 1,
-          // backgroundColor: "#e8e6e6"
         }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
-        <View style={{ marginHorizontal: 10, marginTop: 10, marginBottom: 50 }}>
+        <View style={{ marginHorizontal: 10, marginTop: 10, marginBottom: 20 }}>
           <View style={{ marginTop: 0 }}>
             {data?.apptStatus === "cancelled" && (
               <View
@@ -148,11 +158,13 @@ const AppointmentDetail = () => {
                 </View>
               </View>
             ) : null}
-            <ApptDoctorCard
-              data={data}
-              defaultColor={defaultColor}
-              router={router}
-            />
+            {data && (
+              <ApptDoctorCard
+                data={data}
+                defaultColor={defaultColor}
+                router={router}
+              />
+            )}
           </View>
           <Apptdetail data={data} defaultColor={defaultColor} />
           <Petientdetail data={data} defaultColor={defaultColor} />
@@ -221,21 +233,19 @@ const AppointmentDetail = () => {
             <>
               <Divider style={{ marginVertical: 20 }} />
               <View>
-                <TouchableOpacity
-                  style={[styles.listWrap]}
-                  onPress={onPressTouch}
-                >
-                  <FontAwesome
-                    name="calendar"
-                    size={26}
-                    style={{ color: defaultColor.heading, width: 40 }}
-                  />
-                  <Text style={[styles.listText, { fontWeight: 600 }]}>
-                    Re-schedule
-                  </Text>
-                </TouchableOpacity>
+                <RescheduleSheet
+                  title="Re-schedule Appointment"
+                  modalTitle="Reschedule Appointment"
+                  paymentStatus={data?.paymentStatus}
+                  officialMobile={data?.doctorData.officialMobile}
+                  docId={data.doctorId}
+                  apptId={data._id}
+                  apptType={data?.apptType}
+                  doctorName={data?.doctorData.fullName}
+                  fetchApptDetails={fetchDetails}
+                />
                 <ApptCancelSheet
-                  title="Cancel"
+                  title="Cancel Appointment"
                   modalTitle={
                     data?.paymentStatus === "pending"
                       ? "Reason for Cancelling"

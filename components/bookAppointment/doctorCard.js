@@ -79,7 +79,7 @@ const DoctorCard = ({ data, defaultColor, params }) => {
                     fontWeight: 600,
                   }}
                 >
-                  {data?.firstName + " " + data?.lastName}
+                  {data?.fullName}
                 </Text>
                 <Text
                   style={{

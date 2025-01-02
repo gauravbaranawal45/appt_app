@@ -1,4 +1,4 @@
-import { shortweekdays, monthNames } from "../constants/staticData";
+import { weekdays, shortweekdays, monthNames } from "../constants/staticData";
 
 export function tConvert(time) {
   // Check correct time format and split into components
@@ -49,4 +49,88 @@ export const renderSpecialist = (item, specialist) => {
     });
   }
   return text;
+};
+
+export const setDateSequence = (response) => {
+  const res = [...response];
+  const dayKey = res.map((item) => item.days);
+
+  const modifiedDays = weekdays.map((item, i) => {
+    if (item.label === res[i]?.days) {
+      return { ...res[i], value: item.value };
+    } else {
+      const findIndex = dayKey.indexOf(item.label);
+      if (findIndex !== -1) {
+        const prevdata = res[findIndex];
+        res.splice(findIndex, 0);
+        return { ...prevdata, value: item.value };
+      } else {
+        return { days: item.label, value: item.value };
+      }
+    }
+  });
+  // console.log("modifiedDays", modifiedDays);
+
+  const newState = [...modifiedDays];
+  const currentDate = new Date();
+  const currentday = currentDate.getDay();
+
+  for (let i = 0; i < modifiedDays.length; i++) {
+    if (modifiedDays[i].value === currentday) {
+      break;
+    } else {
+      const prevItem = modifiedDays[i];
+      newState.splice(0, 1);
+      newState.push(prevItem);
+    }
+  }
+
+  // console.log("newState", newState);
+
+  let finaledData = newState.map((item) => {
+    return getScheduleDays(item);
+  });
+  return finaledData;
+};
+
+export const getScheduleDays = (item) => {
+  let dataObj = {};
+  const currentDate = new Date();
+  const currentday = currentDate.getDay();
+  const tmr = new Date();
+  tmr.setDate(tmr.getDate() + 1);
+
+  if (item.value === currentday) {
+    dataObj = { ...item, label: "Today", active: false, date: currentDate };
+  } else if (item.value === tmr.getDay()) {
+    dataObj = {
+      ...item,
+      label: "Tomorrow",
+      active: false,
+      date: tmr,
+    };
+  } else {
+    weekdays.forEach((newitem, i) => {
+      const d = new Date(new Date().getTime() + i * 24 * 60 * 60 * 1000);
+      const getday = d.getDay();
+      if (getday === item.value) {
+        dataObj = {
+          ...item,
+          label: d.getDate() + " " + monthNames[d.getMonth()],
+          active: false,
+          date: d,
+        };
+      }
+    });
+  }
+  return dataObj;
+};
+
+export const textLimit = (text, limit) => {
+  if (text.length > limit) {
+    let result = text.substr(0, limit);
+    return result + " ...";
+  } else {
+    return text;
+  }
 };

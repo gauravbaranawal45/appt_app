@@ -24,7 +24,6 @@ export default function TabLayout() {
       <Tabs.Screen
         name="home"
         options={{
-          unmountOnBlur: true,
           title: "Home",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
@@ -39,7 +38,6 @@ export default function TabLayout() {
       <Tabs.Screen
         name="findDoctor"
         options={{
-          unmountOnBlur: true,
           title: "Doctors",
           tabBarIcon: ({ color, focused }) => (
             <MaterialCommunityIcons
@@ -55,7 +53,6 @@ export default function TabLayout() {
       <Tabs.Screen
         name="globalSearch"
         options={{
-          unmountOnBlur: true,
           title: "Search",
           headerStyle: {
             backgroundColor: "red",
@@ -89,7 +86,6 @@ export default function TabLayout() {
       <Tabs.Screen
         name="appointments"
         options={{
-          unmountOnBlur: true,
           title: "Appointments",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
@@ -104,7 +100,6 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          unmountOnBlur: true,
           title: "Profile",
           tabBarIcon: ({ color, focused }) => (
             <FontAwesome

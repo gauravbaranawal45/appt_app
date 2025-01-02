@@ -6,6 +6,7 @@ import Header from "@/components/header1";
 import { useApplicationContext } from "@/context/ApplicationContext";
 import { appointments } from "@/constants/sortOptions";
 import appointmentFactory from "../../actions/appointmentAction";
+import { RefreshControl } from "react-native";
 
 const layoutMarginVerticle = 20;
 const layoutMarginHorizontal = 10;
@@ -14,10 +15,17 @@ const Appointments = () => {
   const { defaultColor, apptdata, setApptdata } = useApplicationContext();
   const [limit, setLimit] = useState(10);
   const [sortValue, setSortValue] = useState({ name: "All" });
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchAppointments({ apptType: sortValue.value });
+    setRefreshing(false);
+  }, [sortValue]);
 
   const onClickHandler = (item) => {
-    setSortValue(item);
     fetchAppointments({ apptType: item.value });
+    setSortValue(item);
   };
 
   const fetchAppointments = async ({ apptType }) => {
@@ -26,7 +34,7 @@ const Appointments = () => {
         limit: limit,
         apptType,
       });
-      setApptdata(res.data.data);
+      setApptdata(res.data);
     } catch (e) {
       console.log("error", e);
     }
@@ -53,13 +61,19 @@ const Appointments = () => {
       >
         <HeadingTitle
           options={appointments}
-          title={"All Appointments"}
+          title={`All Appointments (${apptdata.total})`}
           onClickHandler={onClickHandler}
           showSort={true}
           sortValue={sortValue}
         />
       </View>
-      <ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>
+      <ScrollView
+        style={{ flex: 1, backgroundColor: "#fff" }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View
           style={{
             marginHorizontal: layoutMarginHorizontal,
@@ -70,7 +84,7 @@ const Appointments = () => {
             link="appointments"
             layoutMarginVerticle={layoutMarginVerticle}
             layoutMarginHorizontal={layoutMarginHorizontal}
-            data={apptdata}
+            data={apptdata.data}
             showSortWithFilter={false}
           />
         </View>

@@ -183,7 +183,12 @@ const Header = () => {
           close={close}
           getCurrentLocation={getCurrentLocation}
         />
-        <NotificationModal open={notificationOpen} close={closeNotification} />
+        {notificationOpen && (
+          <NotificationModal
+            open={notificationOpen}
+            close={closeNotification}
+          />
+        )}
       </View>
     </>
   );

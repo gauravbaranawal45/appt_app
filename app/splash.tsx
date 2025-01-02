@@ -35,7 +35,7 @@ export default function Splash() {
                   textAlign: "center",
                 }}
                 title="Log in"
-                onPress={() => router.push("login")}
+                onPress={() => router.push("./login")}
               />
             </View>
             <View style={{ width: "100%", marginVertical: 10 }}>
@@ -53,7 +53,7 @@ export default function Splash() {
                   textAlign: "center",
                 }}
                 title="Join now"
-                onPress={() => router.push("signup")}
+                onPress={() => router.push("./signup")}
               />
             </View>
           </View>
